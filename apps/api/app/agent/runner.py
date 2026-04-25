@@ -25,8 +25,6 @@ from app.core.llm_client import get_client
 
 logger = logging.getLogger(__name__)
 
-# 일부 모델이 native tool_use 대신 텍스트 안에 XML 형 tool 호출 ("<function_calls><invoke...>")
-# 을 흘리는 경우가 있다. 사용자 화면 노출 + 다음 턴 history 오염 양쪽 다 막기 위해 server 단에서 제거.
 _XML_TOOL_LEAK_RE = re.compile(r"<function_calls\b[^>]*>.*?</function_calls\s*>\s*", re.DOTALL)
 
 
@@ -96,7 +94,6 @@ def run_agent_stream(session: AgentSession, user_input: dict) -> Iterator[dict]:
                 blocked = block.name not in allowed_tool_names
 
                 # 차단된 tool 은 UI 에 호출 표시를 띄우지 않는다 — 토글 OFF 의 의도를 그대로 보이기 위해.
-                # (단 history 에는 tool_use + error tool_result 가 그대로 들어가 다음 턴 LLM 이 인지.)
                 if not blocked:
                     yield {
                         "type": "tool_status",
@@ -123,8 +120,6 @@ def run_agent_stream(session: AgentSession, user_input: dict) -> Iterator[dict]:
                     "blocked": blocked,
                 })
 
-                # 세션 6: search_restaurants 결과의 restaurant_id 를 세션에 누적.
-                # "LLM 이 지어낸 식당" 을 rule-based 로 걸러낸다.
                 if block.name == "search_restaurants" and isinstance(result, dict):
                     for cand in result.get("candidates") or []:
                         pid = cand.get("restaurant_id") if isinstance(cand, dict) else None
@@ -139,7 +134,6 @@ def run_agent_stream(session: AgentSession, user_input: dict) -> Iterator[dict]:
                         "result": result,
                     }
 
-                # 세션 5: ask_user 는 input block 묶음을 반환하고 루프를 끊는다.
                 if (
                     block.name == "ask_user"
                     and isinstance(result, dict)
@@ -193,8 +187,6 @@ _TOOL_GROUPS: dict[str, frozenset[str]] = {
     "tool_weather":  frozenset({"get_weather"}),
     "tool_landmark": frozenset({"get_landmark"}),
     "tool_travel":   frozenset({"estimate_travel_time"}),
-    # ask_user 는 gen_ui 의 sub-feature — 별도 토글 없이 gen_ui ON/OFF 를 따라간다.
-    # `_filter_tools_by_flags` 에서 gen_ui OFF 면 ask_user 자동 제외.
 }
 
 
@@ -205,10 +197,6 @@ def _filter_tools_by_flags(
 
     LLM 입장에서 tool 이 아예 존재하지 않는 상태가 되므로 hallucinated 호출도
     발생하지 않는다.
-
-    의존 관계: `ask_user` 는 input block (form) 을 emit 하므로 `gen_ui` OFF 면
-    의미 없음 — `gen_ui` 가 master, `tool_ask_user` 는 sub. gen_ui OFF 면 ask_user
-    도 자동 제외.
     """
     excluded: set[str] = set()
     if not self_check_enabled:

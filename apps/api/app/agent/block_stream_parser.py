@@ -1,13 +1,13 @@
 """LLM 출력 스트림을 Generative UI block 이벤트로 파싱한다.
 
-세션 5 (Generative UI) 의 핵심 파서.
+Generative UI 의 핵심 파서.
 
 ## 응답 포맷 두 갈래
 
 에이전트 루프가 Claude API 로부터 받는 text 는 세션별 프롬프트에 따라 두 형태 중 하나다.
 
-1. **JSONL (세션 5)** — 각 줄이 하나의 UI block.
-2. **plain text (세션 1~4)** — 자연어 문장.
+1. JSONL — 각 줄이 하나의 UI block.
+2. plain text — 자연어 문장.
 """
 
 from __future__ import annotations
@@ -81,10 +81,6 @@ class BlockStreamParser:
             self._buffer = stripped
             return
 
-        # preamble recovery — LLM 이 JSONL 앞에 "최종 응답을 구성하겠습니다" 같은
-        # 설명을 붙이거나 ```json ... ``` 으로 감싸는 경우를 방어한다.
-        # buffer 안에서 line-start `{` 를 찾아 그 앞은 단일 message 로 방출하고,
-        # 나머지를 jsonl 모드로 회수한다. preamble 에 섞인 코드펜스 마커는 제거.
         jsonl_start = self._buffer.find("\n{")
         if jsonl_start >= 0:
             preamble = _strip_fences(self._buffer[:jsonl_start]).strip()

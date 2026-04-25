@@ -3,18 +3,5 @@
     "defaultMode": "bypassPermissions"
   },
   "outputStyle": "default",
-  "alwaysShowThinking": true,
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/scripts/archive_prompt.sh"
-          }
-        ]
-      }
-    ]
-  }
+  "alwaysShowThinking": true
 }

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+pgdata/
+qdrant_data/
+
+# Docs
+plan/
+snapshots/
+release/
+guide/
+
+# auto-archive of prompts/__init__.py (PostToolUse hook)
+.claude/prompt-history/

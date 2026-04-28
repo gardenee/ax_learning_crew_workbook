@@ -11,17 +11,12 @@ haversine 직선거리 + 평균 도보 속도로 계산한다. 외부 지도 API
     {"origin": {...},
      "candidates": [{"name", "distance_m", "walk_minutes", "source"}, ...]}
 
-──────────────────────────────────────────────────────────────
 완성본. `tool_travel` 토글로 껐다 켤 수 있습니다.
-──────────────────────────────────────────────────────────────
 """
 from __future__ import annotations
 
 import math
 
-# [student-edit] 평균 도보 속도 (m/s). 한국은 대략 1.2~1.4 m/s.
-# 값을 높이면 walk_minutes 가 작아져 후보가 "더 가까워" 보입니다.
-# 신호등/인도 상태를 반영하려면 값을 조금 낮춰보세요.
 WALK_MPS = 1.25
 
 

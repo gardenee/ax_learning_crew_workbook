@@ -1,15 +1,4 @@
-"""Tool 정의 및 핸들러 레지스트리.
-
-────────────────────────────────────────────────────────────────
-새 tool 을 직접 추가할 때는 아래 패턴을 따르세요:
-1. `app/tools/<name>.py` 에 `handle(...)` 구현
-2. `TOOL_DEFINITIONS` 에 Claude API tool 스키마(JSON Schema) append
-3. `TOOL_HANDLERS` 에 name → handler 매핑 추가
-4. 해당 세션 프롬프트에 사용 규칙 서술
-5. (선택) `apps/web/src/lib/session-flags.ts` + `runner._TOOL_GROUPS` 에
-   토글 flag 추가
-────────────────────────────────────────────────────────────────
-"""
+"""Tool 정의 및 핸들러 레지스트리."""
 
 import logging
 

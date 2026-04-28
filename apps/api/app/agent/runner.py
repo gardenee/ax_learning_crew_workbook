@@ -1,11 +1,4 @@
-"""에이전트 러너 — Claude SDK tool_use loop (streaming).
-
-이 파일이 에이전트의 심장입니다.
-
-while 루프 안에서 Claude API를 streaming으로 호출하고, stop_reason에 따라:
-- tool_use  → tool 실행 → 결과를 messages에 추가 → 다시 호출
-- end_turn  → 루프 종료
-"""
+"""에이전트 러너 — Claude SDK tool_use loop (streaming)."""
 
 from __future__ import annotations
 
@@ -76,7 +69,6 @@ def run_agent_stream(session: AgentSession, user_input: dict) -> Iterator[dict]:
         #                            (세션 1~4 는 plain text 만 — LLM 이 block 을 흉내내도 텍스트로 본다)
         yield from _emit_text_events(final, gen_ui_enabled=gen_ui_enabled)
 
-        # assistant 메시지를 히스토리에 기록
         session.messages.append({
             "role": "assistant",
             "content": [_content_block_to_dict(b) for b in final.content],
